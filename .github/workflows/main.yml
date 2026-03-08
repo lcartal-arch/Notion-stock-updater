@@ -1,0 +1,29 @@
+name: Notion Stock Update
+
+on:
+  schedule:
+    # S'exécute à 22:00 UTC (fin de journée boursière US) du lundi au vendredi
+    - cron: '0 22 * * 1-5'
+  workflow_dispatch: # Permet de lancer le script à la main pour tester
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/set-up-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run script
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+          ALPHA_VANTAGE_KEY: ${{ secrets.ALPHA_VANTAGE_KEY }}
+        run: python update_stocks.py
